@@ -2,7 +2,7 @@ let offset = 35;
 let pointers = [];
 let x;
 let y;
-let radius = 200;
+let radius = 300;
 let offsetY;
 
 function setup() {
@@ -25,7 +25,7 @@ function draw() {
   background(16);
   for (let i = 0; i < x; i += 1) {
     for (let j = 0; j < y-1; j += 1) {
-      pointers[i * offsetY + j].move();
+      pointers[i * offsetY + j].move();     
       pointers[i * offsetY + j].show();
     }
   }
@@ -46,8 +46,9 @@ class Pointer {
     if (distanceSq < radius * radius) {
       this.direction = p5.Vector.sub(mousePosition, this.position);
       this.direction.normalize();
-      this.direction.mult(8);
+      this.direction.mult(8+sqrt(distanceSq/20000));
     }
+    return (distanceSq < radius * radius)
   }
 
   show() {
