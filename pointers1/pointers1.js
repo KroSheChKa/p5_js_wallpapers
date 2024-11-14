@@ -3,19 +3,19 @@ let pointers = [];
 let x;
 let y;
 let radius = 300;
-let offsetY;
 let prev_mouseX = -1, prev_mouseY = -1;
 let floored_mouseX, floored_mouseY;
-let freeze;
+let freeze; // canvas to store frozen lines
 let frozen = false;
+let mag_divisor = 141 // affects on how fast the line lengthen 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight*0.996);
+  createCanvas(windowWidth, windowHeight * 0.996);
   freeze = createGraphics(windowWidth, windowHeight * 0.996);
   frameRate(60);
   x = width / offset;
   y = height / offset;
-  offsetY = Math.floor(y);
+  let offsetY = Math.floor(y);
   for (let i = 0; i < x; i += 1) {
     for (let j = 0; j < offsetY; j += 1) {
       let position = createVector(offset*(i + 0.5), offset*(j + 0.5));
@@ -63,12 +63,13 @@ class Pointer {
     let dx = mousePosition.x - this.position.x;
     let dy = mousePosition.y - this.position.y;
     let distanceSq = dx * dx + dy * dy;
+    let out_of_radius = distanceSq < radius * radius
     
-    if (distanceSq < radius * radius) {
-      let mag = sqrt(distanceSq) / 141;
-      this.direction.set(dx, dy).normalize().mult(8 + mag);
+    if (out_of_radius) {
+      let mag = sqrt(distanceSq) / mag_divisor;
+      this.direction.set(dx, dy).normalize().mult(9 + mag);
     }
-    return (distanceSq < radius * radius)
+    return out_of_radius
   }
 
   show() {
