@@ -29,13 +29,6 @@ window.wallpaperPropertyListener = {
     if (properties.line_width) {
       lineWidth = properties.line_width.value;
     }
-    if (properties.lines_offset) {
-      offset = properties.lines_offset.value;
-      if (offset !== lastOffset) {
-        initializePointers();
-        lastOffset = offset;
-      }
-    }
     if (properties.range) {
       radius = properties.range.value;
     }
@@ -44,6 +37,13 @@ window.wallpaperPropertyListener = {
     }
     if (properties.mag_divisor) {
       magDivisor = properties.mag_divisor.value;
+    }
+    if (properties.lines_offset) {
+      offset = properties.lines_offset.value;
+      if (offset !== lastOffset) {
+        initializePointers();
+        lastOffset = offset;
+      }
     }
   }
 };
