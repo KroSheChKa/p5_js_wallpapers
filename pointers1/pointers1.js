@@ -15,6 +15,7 @@ let radius = 300;
 let offset = 40;
 let lineLength = 9;
 let magDivisor = 140;
+let framesPerSecond = 60;
 
 window.wallpaperPropertyListener = {
   applyUserProperties: function(properties) {
@@ -38,6 +39,10 @@ window.wallpaperPropertyListener = {
     if (properties.mag_divisor) {
       magDivisor = properties.mag_divisor.value;
     }
+    if (properties.frames_per_second) {
+      framesPerSecond = properties.frames_per_second.value;
+      frameRate(framesPerSecond);
+    }
     if (properties.lines_offset) {
       offset = properties.lines_offset.value;
       if (offset !== lastOffset) {
@@ -52,7 +57,7 @@ window.wallpaperPropertyListener = {
 function setup() {
   createCanvas(windowWidth, windowHeight * 0.996);
   freeze = createGraphics(windowWidth, windowHeight * 0.996);
-  frameRate(60);
+  frameRate(framesPerSecond);
   initializePointers();
 }
 
@@ -104,6 +109,7 @@ function draw() {
       freeze.image(get(), 0, 0);
       frozen = true;
     }
+    
   } else {
     
     image(freeze, 0, 0);
