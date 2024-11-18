@@ -11,10 +11,12 @@ let lastOffset;
 let backgroundColor = [16, 16, 16];
 let lineColor = [255, 255, 255];
 let lineWidth = 2
-let radius = 300;
+let radius = 100;
+let outerRadius = 300;
+let interpolationRate = 0.2;
 let offset = 40;
 let lineLength = 9;
-let magDivisor = 140;
+let magDivisor = 30;
 let framesPerSecond = 60;
 
 window.wallpaperPropertyListener = {
@@ -32,6 +34,12 @@ window.wallpaperPropertyListener = {
     }
     if (properties.range) {
       radius = properties.range.value;
+    }
+    if (properties.outer_range) {
+      outerRadius = properties.outer_range.value;
+    }
+    if (properties.interpolation_rate) {
+      interpolationRate = properties.interpolation_rate.value;
     }
     if (properties.line_length) {
       lineLength = properties.line_length.value;
@@ -76,7 +84,7 @@ function initializePointers() {
       let direction = p5.Vector.fromAngle(angle).mult(lineLength);
       let index = i * offsetY + j
       pointers[index] = new Pointer(position, direction);
-      pointers[index].move();
+      pointers[index].move(0);
       pointers[index].show();
     }
   }
@@ -84,7 +92,6 @@ function initializePointers() {
   freeze.image(get(), 0, 0);
   frozen = true;
 }
-
 
 function mousePressed() {
   initializePointers();
@@ -125,18 +132,19 @@ class Pointer {
     this.direction = direction;
   }
 
-  move() {
+  move(we_good = 1) {
     let mousePosition = createVector(mouseX, mouseY);
     let dx = mousePosition.x - this.position.x;
     let dy = mousePosition.y - this.position.y;
     let distanceSq = dx * dx + dy * dy;
-    let out_of_radius = distanceSq < radius * radius
-    
-    if (out_of_radius) {
-      let mag = sqrt(distanceSq) / magDivisor;
-      this.direction.set(dx, dy).normalize().mult(lineLength + mag);
+    let distance = sqrt(distanceSq);
+
+    if (distanceSq < radius*radius) {
+      this.direction.set(dx, dy).normalize().mult(lineLength + distanceSq / (magDivisor*magDivisor));
+    } else if (distance < outerRadius & we_good & interpolationRate > 0) {
+      let targetDirection = createVector(dx, dy).normalize().mult(lineLength + distanceSq / (magDivisor*magDivisor));
+      this.direction.lerp(targetDirection, interpolationRate);
     }
-    return out_of_radius
   }
 
   show() {
